@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>酒店管理系统</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">酒店管理系统</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <% if(login){ %>
+            <ul class="nav navbar-nav">
+                <li><a href="/check">入住管理</a></li>
+                <li><a href="/exitroom">退房管理</a></li>
+                <li><a href="/jilu">记录查询</a></li>
+                <li><a href="/showRoom">房间管理</a></li>
+                <li><a href="/showClass">房类管理</a></li>
+                <li><a href="/room">房间图</a></li>
+                <li class="active"><a href="/pw">修改密码</a></li>
+
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">欢迎<%=user%></a></li>
+                <li><a href="/quit">退出系统</a></li>
+            </ul>
+            <%}else{%>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/reg">注册</a></li>
+                <li><a href="/login">登陆</a></li>
+            </ul>
+            <%}%>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<div class="container" style="margin-top:20px">
+    <div class="cont" >
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label for="yonghuming" class="col-sm-2 control-label">用户名</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="yonghuming" id="yonghuming" placeholder="" value="<%=user%>" disabled>
+                    <em></em>
+                    <span class="explain"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="mima" class="col-sm-2 control-label">密码</label>
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" name="mima" id="mima" placeholder="">
+                    <em></em>
+                    <span class="explain"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="button" id="update" class="btn btn-default">更改密码</button>
+                    <button type="button" id="yes" class="btn btn-default">
+                        <a href="#">取消</a>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+
+
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/PageNav.js"></script>
+<script type="text/javascript" src="js/underscore.js"></script>
+<script>
+    $("#update").click(function () {
+        $.post("/changepw", {
+            "user": $("#yonghuming").val(),
+            "mima": $("#mima").val()
+        }, function (data) {
+            if(data.result==1){
+            // console.log(data)
+            alert("修改成功，请重新登录");
+            window.location = "/login"
+            }
+        });
+    });
+
+
+</script>
+
+
+</body>
+</html>

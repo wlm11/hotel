@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>用户信息</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/jquery-ui.css" />
+    <script src="js/jquery-1.12.3.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <!--PQ Grid files-->
+    <link rel="stylesheet" href="css/pqgrid.min.css" />
+    <script src="js/pqgrid.min.js"></script>
+    <!--PQ Grid Office theme-->
+    <link rel="stylesheet" href="themes/office/pqgrid.css" />
+
+    <style type="text/css">
+        a{
+            color:#000;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-default" style="margin-bottom:0px">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">酒店管理系统</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/">首页</a></li>
+                <li><a href="/order">在线预订</a></li>
+                <li><a href="/search">订单查询</a></li>
+                <li><a href="/reg">酒店管理</a></li>
+                <li><a href="/showClass">关于我们</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+
+    <!--<div class="container" style="margin-top:50px;">-->
+        <!--<div class="row">-->
+            <!--<table class="table table-bordered">-->
+                <!--<thead>-->
+                <!--<tr>-->
+                    <!--<th></th>-->
+                    <!--<th>房间类型</th>-->
+                    <!--<th>面积</th>-->
+                    <!--<th>床位数</th>-->
+                    <!--<th>早餐</th>-->
+                    <!--<th>网络</th>-->
+                    <!--<th>电视</th>-->
+                    <!--<th>价格</th>-->
+                    <!--<th></th>-->
+                    <!--</tr>-->
+                <!--</thead>-->
+                <!--<tbody id="tbody"></tbody>-->
+            <!--</table>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <div id="grid_array" style="margin:100px;"></div>
+    <!--<script src="js/jquery-1.12.3.min.js"></script>-->
+    <!--<script src="js/bootstrap.min.js"></script>-->
+
+<script>
+    // $.ajax({
+    //     url:"http://localhost:7000/getclasses",
+    //     type:"get",
+    //     dataType:"jsonp",
+    //     success:function(data) {
+    //         // console.log(data);
+    //         for(var i=0;i<data.length;i++){
+    //             var breakfast;
+    //             if(data[i].breakfast==0){
+    //                 breakfast="是";
+    //             }else if(data[i].breakfast==1){
+    //                 breakfast="否";
+    //             }
+    //             var network;
+    //             if(data[i].network==0){
+    //                 network="是";
+    //             }else if(data[i].network==1){
+    //                 network="否";
+    //             }
+    //             var tv;
+    //             if(data[i].tv==0){
+    //                 tv="是";
+    //             }else if(data[i].tv==1){
+    //                 tv="否";
+    //             }
+    //             var str=
+    //                 "<tr>" +
+    //                     "<th>"+(i+1)+"</th>"+
+    //                     "<th>"+data[i].roomtype+"</th>"+
+    //                     "<th>"+data[i].roomarea+"</th>"+
+    //                     "<th>"+data[i].bednum+"</th>"+
+    //                     "<th>"+breakfast+"</th>"+
+    //                     "<th>"+network+"</th>"+
+    //                     "<th>"+tv+"</th>"+
+    //                     "<th>"+data[i].price+"</th>"+
+    //                     "<th><a href='/order'>免费预订</a></th>"+
+    //                 "</tr>"
+    //             $("#tbody").append(str);
+    //         }
+    //
+    //
+    //     }
+    // })
+
+
+    $(function () {
+
+        $.get("/getclasses",function(data){
+            console.log(data);
+
+            for(var i=0;i<data.length;i++){
+
+                if(data[i].breakfast=="0"){
+                    data[i].breakfast="是";
+                }else{
+                    data[i].breakfast="否"
+                }
+
+                if(data[i].network=="0"){
+                    data[i].network="是";
+                }else{
+                    data[i].network="否"
+                }
+
+                if(data[i].tv=="0"){
+                    data[i].tv="是";
+                }else{
+                    data[i].tv="否"
+                }
+            }
+            // console.log(data);
+            $("#grid_array").pqGrid({
+                width: 900,
+                height: 400,
+                title: "我的首页",
+                resizable:false,
+                draggable:false,
+                dataModel :  {
+                    data: data
+                },
+                pageModel: { type: "local", rPP: 3, strRpp: "{0}", strDisplay: "{0} to {1} of {2}",rPPOptions:[3, 5, 7]},
+                colModel : [
+                    { title: "房间类型", width: 150, dataType: "integer" , dataIndx: "roomtype"},
+                    { title: "面积", width: 100, dataType: "string" , dataIndx: "roomarea"},
+                    { title: "床位数", width: 100, dataType: "float", align: "right", dataIndx: "bednum"},
+                    { title: "早餐", width: 100, dataType: "float", align: "right", dataIndx: "breakfast"},
+                    { title: "网络", width: 100, dataType: "float", align: "right", dataIndx: "network"},
+                    { title: "有线电视", width: 100, dataType: "float", align: "right", dataIndx: "tv"},
+                    { title: "价格", width: 100, dataType: "float", align: "right", dataIndx: "price"},
+                    { title: "剩余数量", width: 100, dataType: "float", align: "right", dataIndx: "residuenum"}
+                ],
+                //用户编辑单元格结束之后做的事情
+                // cellSave: function( event, ui ) {
+                //     console.log(ui);
+                //     // ui.rowData能够拿到这一行的全部数据，甭废话，直接扔给服务器持久化！
+                //     $.get("/admin",ui.rowData,function(data){
+                //
+                //     })
+                // }
+            });
+
+            //得到焦点
+            // $( "#grid_array" ).pqGrid( "editCell", { rowIndx: 5, dataIndx: "profits" } );
+
+            // $("body").click(function(){
+            //     $( "#grid_array" ).pqGrid( "updateRow",
+            //         {	 rowIndx: 2, row: { 'revenues': 123123  } }
+            //     );
+            // })
+        })
+
+
+
+    });
+
+</script>
+
+</body>
+</html>

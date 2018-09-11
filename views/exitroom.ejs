@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>入住管理</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+        a{
+            color:#000;
+        }
+        .container li{
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">酒店管理系统</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <% if(login){ %>
+            <ul class="nav navbar-nav">
+                <li><a href="/check">入住管理</a></li>
+                <li class="active"><a href="/rent">退房管理</a></li>
+                <li><a href="/jilu">记录查询</a></li>
+                <li><a href="/showRoom">房间管理</a></li>
+                <li><a href="/showClass">房类管理</a></li>
+                <li><a href="/room">房间图</a></li>
+                <li><a href="/pw">修改密码</a></li>
+
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">欢迎<%=user%></a></li>
+                <li><a href="/quit">退出系统</a></li>
+            </ul>
+            <%}else{%>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/reg">注册</a></li>
+                <li><a href="/login">登陆</a></li>
+            </ul>
+            <%}%>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+
+<div class="container">
+
+    <div class="container">
+        <h4>请输入房间号查询</h4>
+        <div>
+            <input type="text" class="form-control" aria-label="..." name="roomid">
+            <button type="button" class="btn btn-success" id="searchorder">查询</button>
+        </div>
+        <div class="alert alert-danger" role="alert" style="margin-top: 10px;display:none"id="alert"></div>
+
+        <div class="cont" style="display:none">
+
+        <div>
+            <h4>顾客信息</h4>
+            <li>
+                证件类型:
+                <span id="idtype"></span>
+                证件号:
+                <span id="certificate"></span>
+            </li>
+            <li>
+                姓名: <span id="name"></span>
+
+                性别: <span id="sex"></span>
+            </li>
+        </div>
+        <div>
+                <h4>入住信息</h4>
+                <li>
+                    入住号:
+                   <span id="orderid"></span>
+
+                </li>
+                <li>
+                    房间号: <span id="roomid"></span>
+
+                    房间类型: <span id="roomtype"></span>
+                </li>
+                <li>
+                    入住日期: <span id="starttime"></span>
+
+
+                </li>
+                <li>
+                    入住天数: <span id="day"></span>
+                    价格；<span id="price"></span>
+                </li>
+                <li>
+                    消费金额: <span id="money"></span>
+                </li>
+            </div>
+        <button type="button" class="btn btn-success" id="btn" style="margin-top:10px;" id="btn">退房</button>
+
+        </div>
+
+
+
+
+    </div>
+</div>
+
+
+    <script src="js/jquery-1.12.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+<script>
+    var endtime="";
+    var stime="";
+    $("#searchorder").click(function(){
+        var cont=$("input[name=roomid]").val();
+        // console.log(cont);
+
+
+        $.post("/searchroom/"+cont,function(data) {
+            // console.log(data);
+
+            var data=data.result[0];
+
+            if(!data){
+                $("#alert").css("display","block");
+                $("#alert").html("此房暂未出租")
+            }else{
+                var arr=data.starttime.split("-").join("")
+                var date=new Date();
+                var time=date.toLocaleDateString().split("/");
+                var times=""
+                for(var i=0;i<time.length;i++){
+                    if(time[i]<10){
+                        time[i]="0"+time[i]
+                    }
+                    times+=time[i]
+                }
+                stime=parseInt(arr)
+                endtime=parseInt(times);
+                console.log(endtime);
+                var day=endtime-stime;
+                console.log(day);
+                if(day<=0){
+                    day=1
+                }
+
+                $("#alert").css("display","none");
+                $(".cont").css("display","block");
+                $("#idtype").html(data.idtype);
+                $("#certificate").html(data.certificate);
+                $("#name").html(data.name);
+                $("#sex").html(data.sex);
+
+                $("#orderid").html(data._id);
+                $("#roomid").html(data.roomid);
+                $("#roomtype").html(data.roomtype);
+
+                $("#starttime").html(data.starttime);
+
+                $("#day").html(day);
+
+            }
+
+            $.post("/roomtype/"+data.roomtype,function(price){
+                // console.log(data);
+
+                $("#price").html(price.roomtype[0].price+"元/每天");
+
+                $("#money").html(price.roomtype[0].price*$("#day").html()+"元.")
+            });
+        })
+
+    })
+    console.log(endtime);
+    $("#btn").click(function(){
+       console.log(stime);
+        $.post("/editorder/"+$("#roomid").html(),{"orderstate":"2","name":$("#name").html(),"endtime":endtime,"starttime":stime},function(data){
+
+            if(data.result==1){
+                alert("退订成功");
+            }
+        })
+    })
+
+</script>
+
+</body>
+</html>

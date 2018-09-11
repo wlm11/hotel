@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>房间类型</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style type="text/css">
+        a{
+            color:#000;
+        }
+        #btn_group{
+            padding:20px 20px;
+        }
+        #btn_group button{
+            margin-right:10px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">酒店管理系统</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="/check">入住管理</a></li>
+                <li><a href="/exitroom">退房管理</a></li>
+                <li><a href="/jilu">记录查询</a></li>
+                <li><a href="/showRoom">房间管理</a></li>
+                <li class="active"><a href="/showClass">房类管理</a></li>
+                <li><a href="/room">房间图</a></li>
+                <li><a href="/pw">修改密码</a></li>
+
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">欢迎<%=user%></a></li>
+                <li><a href="/quit">退出系统</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div class="container">
+    <div class="btn-group" role="group" aria-label="..." id="btn_group">
+        <button type="button" class="btn btn-default  btn-info" id="create"  data-toggle="modal" data-target="#myModal">增加</button>
+        <button type="button" class="btn btn-danger" id="del">删除</button>
+        <button type="button" class="btn btn-default  btn-info" data-toggle="modal" data-target="#amend" id="amendOne">修改</button>
+
+    </div>
+
+    <table class="table table-bordered ">
+        <thead>
+        <tr>
+            <th></th>
+            <th>id</th>
+            <th>类别名称</th>
+            <th>房间面积</th>
+            <th>床位数</th>
+            <th>早餐</th>
+            <th>网络</th>
+            <th>有线电视</th>
+            <th>价格</th>
+            <th>房间数量</th>
+            <th>剩余数量</th>
+        </tr>
+        </thead>
+        <tbody id="tbody">
+        <%
+        for(var i=0;i<result.length;i++){
+        %>
+        <tr>
+            <th><input type="radio" name="check" class="gou" data-id="<%=result[i].id%>"></th>
+            <th><%=i+1%></th>
+            <th><%=result[i].roomtype%></th>
+            <th><%=result[i].roomarea%></th>
+            <th><%=result[i].bednum%></th>
+            <th><%if(result[i].breakfast==0){%>
+                是
+                <%}else{%>
+                否
+                <%}%></th>
+            <th><%if(result[i].network==0){%>
+                是
+                <%}else{%>
+                否
+                <%}%></th>
+            <th><%if(result[i].tv==0){%>
+                是
+                <%}else{%>
+                否
+                <%}%></th>
+            <th><%=result[i].price%></th>
+            <th><%=result[i].roomnum%></th>
+            <th><%=result[i].residuenum%></th>
+        </tr>
+
+        <%
+        }
+        %>
+        </tbody>
+    </table>
+
+    <!--//新建-->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">新建类</h4>
+                </div>
+                <div class="modal-body">
+                    <p>类型：
+                        <input type="text" name="type" id="type"/>
+                    </p>
+                    <p>房间面积:
+                        <input type="text" name="roomarea">
+                    </p>
+                    <p>床位数：
+                        <input type="text" name="bednum">
+                    </p>
+                    <p>价格
+                        <input type="text" name="price">
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
+                    <button type="button" class="btn btn-primary" id="btn">ok</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!--//修改-->
+    <div class="modal fade" id="amend" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">编辑类型</h4>
+                </div>
+                <div class="modal-body">
+                    <p>房间面积：<input type="text" name="roomarea" id="roomarea"/></p>
+                    <p>房间类型：
+                        <select name="roomtype" id="roomtype">
+                            <%for(var i=0;i<Aclass.length;i++){%>
+                            <option value="<%=Aclass[i].roomtype%>"><%=Aclass[i].roomtype%></option>
+                            <%}%>
+                        </select>
+                    </p>
+                    <p>
+                        床位数：
+                        <input type="text" name="bednum" id="bednum"/>
+                    </p>
+                    <p>
+                        早餐:
+                        <input type="text" name="breakfast">
+                    </p>
+                    <p>
+                        网络:
+                        <input type="text" name="network">
+                    </p>
+                    <p>
+                        有线电视:
+                        <input type="text" name="tv">
+                    </p>
+                    <p>
+                        价格:
+                        <input type="text" name="price">
+                    </p>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
+                    <button type="button" class="btn btn-primary" id="amendbtn">ok</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="pagenavbox"></div>
+</div>
+
+    <script src="js/jquery-1.12.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/PageNav.js"></script>
+<script>
+    // //新建类
+    $("#btn").click(function(){
+        // console.log($("option:selected").val())
+
+        $.post("/saveClass",{"roomtype":$("input[name=type]").val(),"breakfast":"0","network":"0","tv":"0","roomarea":$("input[name=roomarea]").val(),"bednum":$("input[name=bednum]").val(),"price":$("input[name=price]").val(),"roomnum":$("input[name=roomnum]").val(),"residuenum":$("input[name=residuenum]").val()},function(data){
+            console.log(data);
+            if(data.result==1){
+                alert("插入成功");
+                window.location="/showClass";
+            }else if(data.result==-1){
+                // alert("")
+            }
+        })
+    })
+
+    // //删除
+    $("#del").click(function(){
+        var id=$("input[name=check]:checked").data("id");
+        // console.log(id);
+        $("input[name=check]:checked").parent("th").parent("tr").remove();
+        $.post("/delClass/"+id,function(data){
+            if(data.result==1){
+                alert("删除成功");
+            }
+        })
+    })
+
+    // //修改类
+    $("#amendOne").click(function(){
+        var id=$("input[name=check]:checked").data("id");
+
+        $.ajax({
+            "url":"/amendclass/"+id,
+            "type":"post",
+            "success":function(data){
+                console.log(data);
+                var data=data.result[0];
+                var breakfast="";
+                if(data.breakfast=="0"){
+                    breakfast="是";
+                }else{
+                    breakfast="否"
+                }
+                var network="";
+                if(data.network=="0"){
+                    network="是";
+                }else{
+                    network="否"
+                }
+                var tv="";
+                if(data.tv=="0"){
+                    tv="是";
+                }else{
+                    tv="否"
+                }
+                // console.log($("#amend option:selected"),data.state);
+                $("#amend .modal-dialog .modal-body input[name=roomarea]").val(data.roomarea);
+                $("#amend .modal-dialog .modal-body input[name=bednum]").val(data.bednum);
+                $("#amend .modal-dialog .modal-body input[name=breakfast]").val(breakfast);
+                $("#amend .modal-dialog .modal-body input[name=network]").val(network);
+                $("#amend .modal-dialog .modal-body input[name=tv]").val(tv);
+                $("#roomtype option[value="+data.roomtype+"]").attr("selected","selected");
+                $("#amend .modal-dialog .modal-body input[name=price]").val(data.price);
+            }
+        })
+
+    })
+
+
+    //点击修改按钮
+    $("#amendbtn").click(function(){
+        var id=$("input[name=check]:checked").data("id");
+
+        var breakfast="";
+        if( $("#amend .modal-dialog .modal-body input[name=breakfast]").val()=="是"){
+            breakfast="0";
+        }else if($("#amend .modal-dialog .modal-body input[name=breakfast]").val()=="否"){
+            breakfast="1"
+        }
+
+        var network="";
+        if($("#amend .modal-dialog .modal-body input[name=network]").val()=="是"){
+            network="0";
+        }else if($("#amend .modal-dialog .modal-body input[name=network]").val()=="否"){
+            network="1"
+        }
+        var tv="";
+        if($("#amend .modal-dialog .modal-body input[name=tv]").val()=="是"){
+            tv="0";
+        }else if($("#amend .modal-dialog .modal-body input[name=tv]").val()=="否"){
+            tv="1"
+        }
+        $.post("/updateclass/"+id,{"roomarea":$("#amend .modal-dialog .modal-body input[name=roomarea]").val(),"roomtype":$("#roomtype option:selected").val(),"bednum":$("#amend .modal-dialog .modal-body input[name=bednum]").val(),"breakfast":breakfast,"network":network,"tv":tv,"price":$("#amend .modal-dialog .modal-body input[name=price]").val()},function(data){
+            if(data.result==1){
+                alert("更改成功");
+                window.location="/showClass";
+            }
+        })
+    })
+
+
+    $.get("/Allclass?page=1",function(data){
+        //分页条
+        new PageNav({
+            boxid : "pagenavbox",
+            page : 1,
+            pageAmount : data.pageAmount,
+            change : function(pagenumber){
+                gotopage(pagenumber);
+                // console.log($(this).html());
+            }
+        });
+
+        gotopage(1);
+
+        function gotopage(pagenumber){
+            //清空
+            $("#tbody").empty();
+
+            //获得新的数据
+            $.get("/Allclass?page=" + pagenumber,function(data){
+                $.each(data.results,function(i, n){
+                    //创建一个tr标签
+                    // console.log(i,n);
+                    // console.log(n);
+                    if(n.breakfast=="0"){
+                        n.breakfast="是";
+                    }else{
+                        n.breakfast="否";
+                    }
+                    if(n.network=="0"){
+                        n.network="是";
+                    }else{
+                        n.network="否";
+                    }
+                    if(n.tv=="0"){
+                        n.tv="是";
+                    }else{
+                        n.tv="否";
+                    }
+                    $tr = $("<tr></tr>");
+                    $("<th><input type='radio' name='check' class='gou' data-id='"+n._id+"'></th>").appendTo($tr);
+                    $("<th></th>").html(i+1).appendTo($tr);
+                    $("<th></th>").html(n.roomtype).appendTo($tr);
+                    $("<th></th>").html(n.roomarea).appendTo($tr);
+                    $("<th></th>").html(n.bednum).appendTo($tr);
+                    $("<th></th>").html(n.breakfast).appendTo($tr);
+                    $("<th></th>").html(n.network).appendTo($tr);
+                    $("<th></th>").html(n.tv).appendTo($tr);
+                    $("<th></th>").html(n.price).appendTo($tr);
+                    $("<th></th>").html(n.roomnum).appendTo($tr);
+                    $("<th></th>").html(n.residuenum).appendTo($tr);
+                    //上树
+                    $tr.appendTo($("#tbody"));
+                });
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

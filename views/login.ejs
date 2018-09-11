@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>登录- 酒店管理系统</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">酒店管理系统</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/">注册</a></li>
+                <li class="active"><a href="/login">登录</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+    <div class="container">
+        <div class="col-lg-4">
+            <h1>欢迎登录</h1>
+            <form>
+                <div class="form-group">
+                    <label for="yonghuming">用户名</label>
+                    <input type="text" class="form-control" name="yonghuming" id="yonghuming" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label for="mima">密码</label>
+                    <input type="password" class="form-control" name="mima" id="mima" placeholder="">
+                </div>
+
+                <button type="button" class="btn btn-success" id="denglu">登陆</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/jquery-1.12.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $("#denglu").click(function(){
+            $.post("/login",{"user":$("input[name=yonghuming]").val(),"password":$("input[name=mima]").val()},function(data){
+                if(data.result==1){
+                    alert("登录成功");
+                    window.location = "/check";
+                }else if(data.result==-1){
+                    alert("用户名不存在");
+                }else if(data.result==-2){
+                    alert("密码错误");
+                }
+            })
+        })
+    </script>
+</body>
+</html>

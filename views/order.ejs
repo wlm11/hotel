@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>客户--订单页</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+        a{
+            color:#000;
+        }
+        .container li{
+            margin-top: 20px;
+            list-style: none;
+        }
+        button{
+            margin-top:20px;
+            margin-right:10px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-default" style="margin-bottom:0px">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">酒店管理系统</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+            <ul class="nav navbar-nav">
+                <li><a href="/">首页</a></li>
+                <li class="active"><a href="/order">在线预订</a></li>
+                <li><a href="/search">订单查询</a></li>
+                <li><a href="/reg">酒店管理</a></li>
+                <li><a href="#">关于我们</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+
+<div class="container" style="margin-top:50px;">
+    <li>
+        入住日期:
+        <input type="date" name="starttime">请输入住店时间
+    </li>
+    <li>
+        离店日期:
+        <input type="date" name="endtime">请输入离店时间
+    </li>
+    <li>
+        房间类型:
+        <select name="type" id="type">
+            <%for(var i=0;i<Aclass.length;i++){%>
+            <option value ="<%=Aclass[i].roomtype%>"><%=Aclass[i].roomtype%></option>
+            <%}%>
+        </select>
+    </li>
+    <li>
+        房间剩余数量: <span id="num"></span>
+    </li>
+    <li>价格: <span id="price"></span>元/每天</li>
+    <li>
+        预订数量:
+        <input type="text" name="ordernum">
+    </li>
+    <li>
+        入住人姓名:
+        <input type="text" name="name"><br>
+        多人入住用逗号隔开
+    </li>
+    <li>
+        联系人:
+        <input type="text" name="people">
+    </li>
+    <li>
+        联系电话:
+        <input type="text" name="tel">
+    </li>
+    <li>
+        留言:
+        <textarea name="liuyan" style="width: 200px;height:100px;" id="text"></textarea>
+    </li>
+
+    <div class="alert alert-success" role="alert" style="display:none" id="alert"></div>
+
+    <button type="button" class="btn btn-success" id="btn">提交</button>
+</div>
+
+
+    <script src="js/jquery-1.12.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+<script>
+    $("input[name=starttime]").change(function(){
+        var arr=$(this).val().split("-").join("")
+        var date=new Date()
+        var time=date.toLocaleDateString().split("/")
+        var times=""
+        for(var i=0;i<time.length;i++){
+            if(time[i]<10){
+                time[i]="0"+time[i]
+            }
+            times+=time[i]
+        }
+        var starttime=parseInt(arr)
+        var endtime=parseInt(times)
+        var timenum=starttime-endtime
+        if(timenum<0){
+            alert("不能选择以前的时间")
+            $(this).val("")
+        }
+    })
+    $("input[name=endtime]").change(function(){
+        var start=$("input[name=starttime]").val().split("-").join("")
+        var end=$(this).val().split("-").join("")
+        var timenum=end-start;
+        // console.log(timenum);
+        if(timenum<0){
+            alert("时间选择错误")
+            $(this).val("")
+        }
+    })
+    $.post("/order/"+$('#type option:selected').val(),function(data){
+        $("#num").html(data.result[0].residuenum);
+        $("#price").html(data.result[0].price)
+    });
+    $("#type").change(function(){
+        $.post("/order/"+$('#type option:selected').val(),function(data){
+            $("#num").html(data.result[0].residuenum);
+            $("#price").html(data.result[0].price)
+        });
+    })
+
+    $("#btn").click(function(){
+
+        var price=$("#price").html();
+        $.post("/doorder",{"starttime":$("input[name=starttime]").val(),"endtime":$("input[name=endtime]").val(),"roomtype":$("#type option:selected").val(),"roomnum":$("input[name=ordernum]").val(),"name":$("input[name=name]").val(),"people":$("input[name=people]").val(),"tel":$("input[name=tel]").val(),"remark":$("#text").val(),"price":price,"orderstate":"0"},function(data){
+            console.log(data);
+            if(data.result==1){
+
+                alert("恭喜您预订成功");
+                $("#alert").css("display","block");
+                $("#alert").html("恭喜您预订成功，您可以通过所留联系人或者电话号码进行查询<br> <a href='/search'>查询订单</a>")
+                // window.location="/";
+            }else if(data.result==-1){
+                // alert("")
+            }
+        })
+    })
+
+
+</script>
+
+</body>
+</html>
